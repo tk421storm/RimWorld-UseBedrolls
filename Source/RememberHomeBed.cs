@@ -40,29 +40,57 @@ namespace UseBedrolls
 		public static bool Get(Pawn pawn, out Building_Bed bed)
 		{
 			var comp = Current.Game.GetComponent<HomeBedComp>();
-			return comp.homeBeds.TryGetValue(pawn, out bed);
+			if (comp.homeBeds.TryGetValue(pawn, out bed))
+			{
+				if (bed == null || bed.Destroyed || bed.Discarded || bed.IsBurning() || bed.IsDangerousFor(pawn) || bed.IsForbidden(pawn) || !bed.Spawned)
+				{
+					Log.Message($"{pawn} stored home bed is null, removing");
+					comp.homeBeds.Remove(pawn);
+					comp.bedOwners.Remove(bed);
+
+				}
+				return false;
+			}
+			return true;
 		}
 
 		public static bool Get(Building_Bed bed, out Pawn pawn)
 		{
 			var comp = Current.Game.GetComponent<HomeBedComp>();
-			return comp.bedOwners.TryGetValue(bed, out pawn);
+			if (comp.bedOwners.TryGetValue(bed, out pawn))
+			{
+				if (bed == null || bed.Destroyed || bed.Discarded || bed.IsBurning() || bed.IsDangerousFor(pawn) || bed.IsForbidden(pawn) || !bed.Spawned)
+				{
+					Log.Message($"{pawn} stored home bed is null, removing");
+					comp.homeBeds.Remove(pawn);
+					comp.bedOwners.Remove(bed);
+
+				}
+				return false;
+			}
+			return true;
 		}
 
 		public static void Remove(Pawn pawn)
 		{
 			var comp = Current.Game.GetComponent<HomeBedComp>();
-			if (comp.homeBeds.TryGetValue(pawn, out Building_Bed bed))
-				comp.bedOwners.Remove(bed);
-			comp.homeBeds.Remove(pawn);
+			if (comp.homeBeds.ContainsKey(pawn))
+			{
+				if (comp.homeBeds.TryGetValue(pawn, out Building_Bed bed))
+					comp.bedOwners.Remove(bed);
+				comp.homeBeds.Remove(pawn);
+			}
 		}
 
 		public static void Remove(Building_Bed bed)
 		{
 			var comp = Current.Game.GetComponent<HomeBedComp>();
-			if (comp.bedOwners.TryGetValue(bed, out Pawn pawn))
-				comp.homeBeds.Remove(pawn);
-			comp.bedOwners.Remove(bed);
+			if (comp.bedOwners.ContainsKey(bed))
+			{
+				if (comp.bedOwners.TryGetValue(bed, out Pawn pawn))
+					comp.homeBeds.Remove(pawn);
+				comp.bedOwners.Remove(bed);
+			}
 		}
 	}
 

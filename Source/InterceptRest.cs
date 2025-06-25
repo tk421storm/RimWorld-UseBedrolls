@@ -40,7 +40,7 @@ namespace UseBedrolls
 				if (RegionAndRoomQuery.RoomAt(c,map).IsPrisonCell != pawn.IsPrisoner)
 					return false;
 
-				if (!GenConstruct.CanPlaceBlueprintAt(invBed.GetInnerIfMinified().def, c, direction, map).Accepted)
+				if (!GenConstruct.CanPlaceBlueprintAt(invBed.GetInnerIfMinified().def, c, direction, map, false, null, null, null, true).Accepted)
 					return false;
 
 				//Support ReplaceStuff allowing blueprints over beds
@@ -65,7 +65,7 @@ namespace UseBedrolls
 			// North/East would be redundant, except for cells on edge ; oh well, too much code to handle that
 			Predicate<IntVec3> cellValidator = delegate (IntVec3 c)
 			{
-				if (!cellValidatorDir(c, Rot4.South) && !cellValidatorDir(c, Rot4.West))
+				if (!cellValidatorDir(c, Rot4.South) && !cellValidatorDir(c, Rot4.West)) // && !cellValidatorDir(c, Rot4.North) && !cellValidatorDir(c, Rot4.East))
 					return false;
 				using (PawnPath path = map.pathFinder.FindPath(root, c, pawn))
 				{
@@ -79,9 +79,9 @@ namespace UseBedrolls
 			IntVec3 placePosition = IntVec3.Invalid;
 			TraverseParms trav = TraverseParms.For(pawn);
 			if (!CellFinder.TryFindRandomReachableNearbyCell(root, map, 4, trav, goodCellValidator, null, out placePosition))
-				if (!CellFinder.TryFindRandomReachableNearbyCell(root, map, 12, trav, goodCellValidator, null, out placePosition))
+				if (!CellFinder.TryFindRandomReachableNearbyCell(root, map, 8, trav, goodCellValidator, null, out placePosition))
 					if (!CellFinder.TryFindRandomReachableNearbyCell(root, map, 4, trav, cellValidator, null, out placePosition))
-						CellFinder.TryFindRandomReachableNearbyCell(root, map, 12, trav, cellValidator, null, out placePosition);
+						CellFinder.TryFindRandomReachableNearbyCell(root, map, 8, trav, cellValidator, null, out placePosition);
 
 			if (placePosition.IsValid)
 			{
@@ -202,7 +202,7 @@ namespace UseBedrolls
 
 		public static bool SingleInvBedIsSpare(Pawn p, Pawn sleepyPawn)
 		{
-			return p.RaceProps.Animal || p.ownership?.OwnedBed != null || LovePartnerRelationUtility.LovePartnerRelationExists(sleepyPawn, p);
+			return p.RaceProps.Animal || p.RaceProps.IsMechanoid || p.ownership?.OwnedBed != null || LovePartnerRelationUtility.LovePartnerRelationExists(sleepyPawn, p);
 		}
 
 		public static int DistanceTo(Thing t1, Thing t2)

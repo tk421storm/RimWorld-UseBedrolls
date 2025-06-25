@@ -63,12 +63,13 @@ namespace UseBedrolls
 		//public override IEnumerable<Gizmo> GetGizmos()
 		public static void Postfix(ref IEnumerable<Gizmo> __result, Building_Bed __instance)
 		{
-			if (PlacedBedsMapComponent.PlacedBedOwner(__instance.Map, __instance) is Pawn owner)
+			PlacedBedsMapComponent component = __instance.Map.GetComponent<PlacedBedsMapComponent>();
+				if (component.PlacedBedOwner(__instance) is Pawn owner)
 			{
 				List<Gizmo> result = __result.ToList();
 				result.Add(new BedOwnerGizmo(owner, "TD.CarriedBy", () =>
 				{
-					__instance.Map.GetComponent<PlacedBedsMapComponent>().placedBeds.Remove(owner);
+					__instance.Map.GetComponent<PlacedBedsMapComponent>().RemoveBed(owner);
 				}));
 				__result = result;
 			}

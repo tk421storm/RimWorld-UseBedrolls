@@ -71,7 +71,8 @@ namespace UseBedrolls
 
 				pawn.ClaimTheGoddamnBedOkay(bed);
 				//placedBeds after Claim because claiming can set forowner which removes owners which removes the placedBed.
-				pawn.Map.GetComponent<PlacedBedsMapComponent>().placedBeds[pawn] = bed;
+				PlacedBedsMapComponent component = pawn.Map.GetComponent<PlacedBedsMapComponent>();
+				component.PlacedBed(pawn, bed);
 
 				Job restJob = new Job(RimWorld.JobDefOf.LayDown, TargetB);
 				pawn.jobs.StartJob(restJob, JobCondition.Succeeded);
@@ -89,11 +90,14 @@ namespace UseBedrolls
 				pawn.Map.designationManager.AddDesignation(new Designation(Target, DesignationDefOf.Uninstall));
 		}
 
+		
+
 		protected override void FinishedRemoving()
 		{
 			Log.Message($"Removing placed beds for {pawn}");
 			Thing minifiedThing = Building.Uninstall();
-			pawn.Map.GetComponent<PlacedBedsMapComponent>().placedBeds.Remove(pawn);
+			PlacedBedsMapComponent component = pawn.Map.GetComponent<PlacedBedsMapComponent>();
+			component.RemoveBed(pawn);
 			pawn.inventory.innerContainer.TryAdd(minifiedThing.SplitOff(1));
 
 			if(HomeBedComp.Get(pawn, out Building_Bed bed))

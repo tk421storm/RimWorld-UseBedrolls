@@ -26,7 +26,7 @@ namespace UseBedrolls
 
 			Predicate<Pawn> surplusFinder = delegate (Pawn p) {
 				int count = p.CountBedsFor(colonist);
-				return count > 1 || (p.RaceProps.Animal && count > 0);
+				return count > 1 || ((p.RaceProps.Animal || p.RaceProps.IsMechanoid) && count > 0);
 			};
 			List<Pawn> surplusPawns = caravanPawns.FindAll(surplusFinder);
 			surplusPawns.Sort((p1, p2) => p1.CountBedsFor(colonist).CompareTo(p2.CountBedsFor(colonist)));

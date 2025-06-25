@@ -18,9 +18,8 @@ namespace UseBedrolls
 		{
 			if (!__instance.Drafted) return;
 
-			var placedBeds = __instance.Map.GetComponent<PlacedBedsMapComponent>().placedBeds;
-
-			if (placedBeds.TryGetValue(__instance, out Building_Bed placedBed))
+			PlacedBedsMapComponent component = __instance.Map.GetComponent<PlacedBedsMapComponent>();
+			if (component.PlacedBed(__instance, out Building_Bed placedBed))
 			{
 				List<Gizmo> result = __result.ToList();
 				result.Add(new Command_Action()

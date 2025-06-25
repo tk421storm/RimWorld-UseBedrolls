@@ -17,18 +17,31 @@ namespace UseBedrolls
 			return (8f - (rester?.GetPriority(pawn) ?? 0f));
 		}
 
+		public override ThinkResult TryIssueJobPackage(Pawn pawn, JobIssueParams jobParams)
+		{
+			PlacedBedsMapComponent component = pawn.Map.GetComponent<PlacedBedsMapComponent>();
+			if (component.PlacedBed(pawn, out Building_Bed bed))
+				{
+				LocalTargetInfo local = bed.InteractionCell;
+						if (pawn.CanReserveAndReach(local, PathEndMode.Touch, Danger.Some))
+						{
+							Log.Message($"{pawn} taking back bed {bed}");
+							return base.TryIssueJobPackage(pawn, jobParams);
+						}
+					}
+			
+			return ThinkResult.NoJob;
+			}
+
 		protected override Job TryGiveJob(Pawn pawn)
 		{
 			if (!pawn.IsColonistPlayerControlled) return null;
-			
-			var placedBeds = pawn.Map.GetComponent<PlacedBedsMapComponent>().placedBeds;
-			if (placedBeds.TryGetValue(pawn, out Building_Bed bed))
-			{
-				Log.Message($"{pawn} taking back bed {bed}");
-				if (pawn.CanReserve(bed))
-					return new Job(JobDefOf.TakeBedroll, bed) { ignoreForbidden = true };
-			}
 
+			PlacedBedsMapComponent component = pawn.Map.GetComponent<PlacedBedsMapComponent>();
+			if (component.PlacedBed(pawn, out Building_Bed bed)) 
+			{ 
+				return new Job(JobDefOf.TakeBedroll, bed);
+			}
 			return null;
 		}
 	}
