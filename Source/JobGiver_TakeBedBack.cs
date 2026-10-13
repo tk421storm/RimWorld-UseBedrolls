@@ -23,7 +23,8 @@ namespace UseBedrolls
 			if (component.PlacedBed(pawn, out Building_Bed bed))
 				{
 				LocalTargetInfo local = bed.InteractionCell;
-						if (pawn.CanReserveAndReach(local, PathEndMode.Touch, Danger.Some))
+						//double bedrolls - pawn can reserve even if another pawn is sleeping in it
+						if (bed.CurOccupants.Count() == 0 && pawn.CanReserveAndReach(local, PathEndMode.Touch, Danger.Some))
 						{
 							Log.Message($"{pawn} taking back bed {bed}");
 							return base.TryIssueJobPackage(pawn, jobParams);

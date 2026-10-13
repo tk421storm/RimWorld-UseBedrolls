@@ -35,6 +35,7 @@ namespace UseBedrolls
 			var comp = Current.Game.GetComponent<HomeBedComp>();
 			comp.homeBeds[pawn] = bed;
 			comp.bedOwners[bed] = pawn;
+
 		}
 
 		public static bool Get(Pawn pawn, out Building_Bed bed)
@@ -42,7 +43,7 @@ namespace UseBedrolls
 			var comp = Current.Game.GetComponent<HomeBedComp>();
 			if (comp.homeBeds.TryGetValue(pawn, out bed))
 			{
-				if (bed == null || bed.Destroyed || bed.Discarded || bed.IsBurning() || bed.IsDangerousFor(pawn) || bed.IsForbidden(pawn) || !bed.Spawned)
+				if (bed == null || bed.Destroyed || bed.Discarded || bed.IsBurning() || bed.IsDangerousFor(pawn) || bed.IsForbidden(pawn) || !bed.Spawned || bed.Map == null || bed.Map.Disposed)
 				{
 					Log.Message($"{pawn} stored home bed is null, removing");
 					comp.homeBeds.Remove(pawn);
@@ -59,7 +60,7 @@ namespace UseBedrolls
 			var comp = Current.Game.GetComponent<HomeBedComp>();
 			if (comp.bedOwners.TryGetValue(bed, out pawn))
 			{
-				if (bed == null || bed.Destroyed || bed.Discarded || bed.IsBurning() || bed.IsDangerousFor(pawn) || bed.IsForbidden(pawn) || !bed.Spawned)
+				if (bed == null || bed.Destroyed || bed.Discarded || bed.IsBurning() || bed.IsDangerousFor(pawn) || bed.IsForbidden(pawn) || !bed.Spawned || bed.Map == null || bed.Map.Disposed)
 				{
 					Log.Message($"{pawn} stored home bed is null, removing");
 					comp.homeBeds.Remove(pawn);
